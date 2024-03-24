@@ -7,11 +7,11 @@ class ExplorePage extends page {
   const ExplorePage({super.key});
 
   @override
-  _ExplorePageState createState() => _ExplorePageState();
+  ExplorePageState createState() => ExplorePageState();
 }
 
 //Page principale de l'explorateur
-class _ExplorePageState extends pageState<ExplorePage> {
+class ExplorePageState extends pageState<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     wHeight = MediaQuery.of(context).size.height;
@@ -28,8 +28,8 @@ class _ExplorePageState extends pageState<ExplorePage> {
                     horizontal: wWidh * 0.05, vertical: wHeight * 0.02),
                 child: Column(
                   children: [
-                    TopArea(),
-                    ExplorerSpace(),
+                    topArea(),
+                    explorerSpace(),
                   ],
                 ),
               )
@@ -39,7 +39,7 @@ class _ExplorePageState extends pageState<ExplorePage> {
   }
 
   //Gestion de la disposition de l'espace au-dessus de l'explorateur
-  Widget TopArea() {
+  Widget topArea() {
     return Row(
       children: [
         Column(
@@ -60,11 +60,11 @@ class _ExplorePageState extends pageState<ExplorePage> {
     );
   }
 
-  Widget ExplorerSpace() {
+  Widget explorerSpace() {
     return Container(
       constraints:
           BoxConstraints(maxHeight: wHeight * 0.7, maxWidth: wWidh * 0.8),
-      child: ExplSpace(),
+      child: const ExplSpace(),
     );
   }
 }

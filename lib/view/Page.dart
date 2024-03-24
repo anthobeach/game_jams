@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:GameJams/view/explorePage.dart';
-import 'package:GameJams/view/otherPage.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
 class page extends StatefulWidget {
   const page({super.key});
@@ -11,35 +11,26 @@ class page extends StatefulWidget {
 
 class pageState<T extends page> extends State<page> {
   late double wHeight = 0;
-  late double wWidh = 0;
+  late double wWidh  = 0;
   //Sélecteur de la page actuelle
   int index = 0;
-  static List<Widget> pages = [
-    ExplorePage(),
-    OtherPage(),
-    OtherPage(),
-    OtherPage()
-  ];
-  @override
-  Widget build(BuildContext context) {
-    wHeight = MediaQuery.of(context).size.height;
-    wWidh = MediaQuery.of(context).size.width;
-    return const Placeholder();
-  }
-
   // Fonction d'affichage personnalisé du texte
   Widget fText(String text, double size, FontWeight weight, Color color) {
     return Text(text,
         style: TextStyle(fontSize: size, fontWeight: weight, color: color));
   }
-
-  //Création d'un bouton
-  Widget configActionButton() {
+@override
+ Widget build(BuildContext context) {
+  return const Placeholder();
+ } 
+  Widget configActionButton(double wHeight,double wWidh) {
+    wHeight = MediaQuery.of(context).size.height;
+    wWidh = MediaQuery.of(context).size.width;
     return Container(
       height: wHeight * 0.06,
       width: wWidh * 0.13,
       decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [Color(0xffBFE2FE), Color(0xff2C7DDD)]),
@@ -56,7 +47,7 @@ class pageState<T extends page> extends State<page> {
   }
 
   // L'affichage d'un icone cliquable
-  Widget PageSwitcher(int MyIndex, String name, String image) {
+  Widget pageSwitcher(double wHeight,double wWidh,int MyIndex, String name, String image) {
     return InkWell(
       //Action lors d'un clic :
       onTap: () {
@@ -73,21 +64,17 @@ class pageState<T extends page> extends State<page> {
               children: [
                 //Texte descriptif
                 fText(
-                    name, wHeight * 0.018, FontWeight.bold, Color(0xff4888C5)),
-                SizedBox(height: wHeight * 0.005),
-                CircleAvatar(
-                  radius: wHeight * 0.004,
-                  backgroundColor: Color(0xff4888C5),
-                )
+                    name, wHeight*0.02, FontWeight.w800,  const Color.fromRGBO(99, 121, 161, 1)),
               ],
             )
           :
           //Icone
           Image.asset(
               image,
-              height: wHeight * 0.025,
-              color: Color(0xff4888C5),
+              color :  const Color.fromRGBO(99, 121, 161, 0.40),
+              width: wHeight*0.04 ,
             ),
+ 
     );
   }
 }

@@ -29,32 +29,31 @@ class _MainInterfaceState extends pageState<MainInterface> {
       //On affiche au milieu la page à afficher
       body: pages.elementAt(index),
       //et en bas la barre de navigation
-      bottomNavigationBar: NavBarLayout(),
+      bottomNavigationBar: NavBarLayout(context),
     ));
   }
 
   //Affichage de la barre du bas de l'application
-  Widget NavBarLayout() {
+  Widget NavBarLayout(BuildContext context) {
     //Récupération de la taille de la fenêtre
     //La portion de l'écran occupée par la barre
+    double wWidh = MediaQuery.of(context).size.width;
+    double wHeight = MediaQuery.of(context).size.height;
     double BarPortion = 0.08;
     return Container(
         padding: EdgeInsets.symmetric(horizontal: wWidh * 0.05),
         height: wHeight * BarPortion,
-        color: Colors.white,
+        color: const Color.fromRGBO(142, 164, 204, 0.25),
         child: Row(
           //on ajoute un écart entre les icones
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           //On affiche les icones
           //Appuyer sur une icone chance la page
           children: [
-            PageSwitcher(1, 'Home Page', './assets/images/gamejam.png'),
-            PageSwitcher(0, 'File Explorer', './assets/images/folder.png'),
-            SizedBox(
-              width: wWidh * 0.05,
-            ),
-            PageSwitcher(2, 'Login page', './assets/images/login.png'),
-            PageSwitcher(3, 'Settings', './assets/images/3dots.png')
+            pageSwitcher(wWidh,wHeight,1, 'Home Page', 'assets/images/gamejam.png'),
+            pageSwitcher(wWidh,wHeight,0, 'File Explorer', 'assets/images/folder.png'),
+            pageSwitcher(wWidh,wHeight,2, 'Login page', 'assets/images/login.png'),
+            pageSwitcher(wWidh,wHeight,3, 'Settings', 'assets/images/3dots.png')
           ],
         ));
   }
