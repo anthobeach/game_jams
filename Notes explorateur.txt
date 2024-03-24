@@ -1,0 +1,14 @@
+https://techhub.hpe.com/eginfolib/networking/docs/switches/5120si/cg/5998-8499_security_cg/content/436050972.htm
+
+Tenter du batch
+ls -l : donne tous les fichier, dossiers et sous-dossiers
+
+Fonctionnement :
+connexion au serveut SFTP
+cd dans le répertoire par défaut
+Afficher dossiers & fichiers
+Si sélectionne fichier : DL dans le bon dossiers
+Si sélectionne dossier : cd dans le dossier
+Drag & drop : upload
+
+https://pub.dev/packages/ftpconnect
