@@ -1,5 +1,5 @@
 import 'package:GameJams/view/explorePage.dart';
-import 'package:GameJams/view/otherPage.dart';
+import 'package:GameJams/view/eventsPage.dart';
 import 'package:GameJams/view/jamPage.dart';
 import 'package:GameJams/view/loginPage.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +16,10 @@ class MainInterface extends page {
 class _MainInterfaceState extends pageState<MainInterface> {
   //Liste des différentes pages possibles
   static List<Widget> pages = [
-    ExplorePage(),
     JamPage(),
+    ExplorePage(),
     LoginPage(),
-    OtherPage()
+    EventPage()
   ];
   @override
   //Construction de la page principale
@@ -50,10 +50,10 @@ class _MainInterfaceState extends pageState<MainInterface> {
           //On affiche les icones
           //Appuyer sur une icone chance la page
           children: [
-            pageSwitcher(wWidh,wHeight,1, 'Home Page', 'assets/images/gamejam.png'),
-            pageSwitcher(wWidh,wHeight,0, 'File Explorer', 'assets/images/folder.png'),
+            pageSwitcher(wWidh,wHeight,0, 'Home Page', 'assets/images/gamejam.png'),
+            pageSwitcher(wWidh,wHeight,1, 'File Explorer', 'assets/images/folder.png'),
             pageSwitcher(wWidh,wHeight,2, 'Login page', 'assets/images/login.png'),
-            pageSwitcher(wWidh,wHeight,3, 'Settings', 'assets/images/3dots.png')
+            pageSwitcher(wWidh,wHeight,3, 'Events', 'assets/images/events.png')
           ],
         ));
   }

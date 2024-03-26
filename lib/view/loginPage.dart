@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import "package:crypt/crypt.dart";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -9,32 +10,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<LoginPage> {
-  User? _user;
-  @override
-  void initState() {
-    _getAuth();
-    super.initState();
-  }
-
-  Future<void> _getAuth() async {
-    setState(() {
-      _user = Supabase.instance.client.auth.currentUser;
-    });
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      setState(() {
-        _user = data.session?.user;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile Example'),
-      ),
-      body: _user == null ? const _LoginForm() : const _ProfileForm(),
-    );
+    return const _LoginForm();
   }
 }
 
@@ -66,7 +45,11 @@ class _LoginFormState extends State<_LoginForm> {
             height: wHeight * 0.8,
             width: wWidth * 0.5,
             child: _loading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Scaffold(
+                        body: Center(
+                             child: Text("Profil infos"),
+                        ),
+                          )
                 : ListView(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 20),
@@ -86,18 +69,60 @@ class _LoginFormState extends State<_LoginForm> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () async {
-                          setState(() {
-                            _loading = true;
-                          });
                           try {
                             final email = _emailController.text;
-                            final password = _passwordController.text;
-                            await Supabase.instance.client.auth
-                                .signInWithPassword(
-                              email: email,
-                              password: password,
-                            );
-                          } catch (e) {
+                            final password = Crypt.sha256(_passwordController.text).toString();
+                            final user = await Supabase.instance.client
+                                .from('user')
+                                .select()
+                                .match({'email': email,'password' : password}).maybeSingle();
+                            if (user==null){
+                              final userP = await Supabase.instance.client
+                                .from('user')
+                                .select()
+                                .eq('password',password);
+                              final userE = await Supabase.instance.client
+                                .from('user')
+                                .select()
+                                .eq('email',email);
+                              if (userE.isEmpty && userP.isEmpty){
+                                ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('wrong password and email'),
+                              backgroundColor: Colors.red,
+                            ));
+                              }
+                              else if (userP.isEmpty){
+                                ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('wrong password'),
+                              backgroundColor: Colors.red,
+                            ));
+
+                              }
+                              else if(userE.isEmpty){
+                                ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('wrong email'),
+                              backgroundColor: Colors.red,
+                            ));
+                              }
+                              ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Login failed'),
+                              backgroundColor: Colors.red,
+                            ));
+                            setState(() {
+                              _loading = false;
+                            });
+                            }
+                            else{
+                              setState(() {
+                            _loading = true;
+                            });
+                            }
+                            }
+                           catch (e) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
                               content: Text('Login failed'),
@@ -118,11 +143,12 @@ class _LoginFormState extends State<_LoginForm> {
                           });
                           try {
                             final email = _emailController.text;
-                            final password = _passwordController.text;
-                            await Supabase.instance.client.auth.signUp(
-                              email: email,
-                              password: password,
-                            );
+                            final password = Crypt.sha256(_passwordController.text).toString();
+                            await Supabase.instance.client
+                                .from('user').insert(
+                                  {"password" : password,
+                                  "email": email}
+                                );
                           } catch (e) {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
@@ -138,116 +164,5 @@ class _LoginFormState extends State<_LoginForm> {
                       ),
                     ],
                   )));
-  }
-}
-
-class _ProfileForm extends StatefulWidget {
-  const _ProfileForm({Key? key}) : super(key: key);
-
-  @override
-  State<_ProfileForm> createState() => _ProfileFormState();
-}
-
-class _ProfileFormState extends State<_ProfileForm> {
-  var _loading = true;
-  final _usernameController = TextEditingController();
-  final _websiteController = TextEditingController();
-
-  @override
-  void initState() {
-    _loadProfile();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _websiteController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadProfile() async {
-    try {
-      final userId = Supabase.instance.client.auth.currentUser!.id;
-      final data = (await Supabase.instance.client
-          .from('profiles')
-          .select()
-          .match({'id': userId}).maybeSingle());
-      if (data != null) {
-        setState(() {
-          _usernameController.text = data['username'];
-          _websiteController.text = data['website'];
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Error occurred while getting profile'),
-        backgroundColor: Colors.red,
-      ));
-    }
-    setState(() {
-      _loading = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _loading
-        ? const Center(child: CircularProgressIndicator())
-        : ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            children: [
-              TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  label: Text('Username'),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _websiteController,
-                decoration: const InputDecoration(
-                  label: Text('Website'),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      setState(() {
-                        _loading = true;
-                      });
-                      final userId =
-                          Supabase.instance.client.auth.currentUser!.id;
-                      final username = _usernameController.text;
-                      final website = _websiteController.text;
-                      await Supabase.instance.client.from('profiles').upsert({
-                        'id': userId,
-                        'username': username,
-                        'website': website,
-                      });
-                      if (mounted) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text('Saved profile'),
-                        ));
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Error saving profile'),
-                        backgroundColor: Colors.red,
-                      ));
-                    }
-                    setState(() {
-                      _loading = false;
-                    });
-                  },
-                  child: const Text('Save')),
-              const SizedBox(height: 16),
-              TextButton(
-                  onPressed: () => Supabase.instance.client.auth.signOut(),
-                  child: const Text('Sign Out')),
-            ],
-          );
   }
 }

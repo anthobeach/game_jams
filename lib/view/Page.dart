@@ -38,7 +38,7 @@ class pageState<T extends page> extends State<page> {
       child: Center(
         //L'ic^one du bouton
         child: Image.asset(
-          './assets/images/arrow.png',
+          'assets/images/arrow.png',
           color: Colors.white,
           height: wHeight * 0.025,
         ),
